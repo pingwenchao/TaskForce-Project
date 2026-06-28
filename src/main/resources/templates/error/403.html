@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{page.title.access_denied}">Access Denied</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/dashboard}">
+            <img th:src="@{/images/logo.png}" alt="Logo" class="dashboard-logo">
+            <span class.s="ms-2" th:text="#{app.title}">TaskForce</span>
+        </a>
+        <div class="d-flex align-items-center">
+            <!-- Language Switcher -->
+            <div th:replace="~{fragments/language-switcher :: languageSwitcher}"></div>
+            <!-- Logout Form -->
+            <form th:action="@{/logout}" method="post" class="d-inline ms-3">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span th:text="#{btn.logout}">Logout</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="card-title text-danger mb-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span th:text="#{header.access_denied}">Access Denied</span>
+                    </h2>
+                    <p class="card-text text-muted mb-4" th:text="#{msg.permission_denied}">
+                        You do not have the required permissions to access this page.
+                    </p>
+                    <div class="alert alert-warning" role="alert">
+                        <strong th:text="#{label.http_403_forbidden}">HTTP 403 Forbidden</strong>
+                    </div>
+                    <div class="mt-4">
+                        <a th:href="@{/dashboard}" class="btn btn-primary">
+                            <i class="bi bi-house"></i>
+                            <span th:text="#{btn.return_to_dashboard}">Return to Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

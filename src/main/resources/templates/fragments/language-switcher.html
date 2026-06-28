@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="languageSwitcher" class="d-flex justify-content-end gap-2">
+    <a href="?lang=en" class="btn btn-sm btn-outline-secondary" th:text="#{lang.en}">EN</a>
+    <a href="?lang=ms" class="btn btn-sm btn-outline-secondary" th:text="#{lang.ms}">MS</a>
+    <a href="?lang=zh" class="btn btn-sm btn-outline-secondary" th:text="#{lang.zh}">中文</a>
+</div>
+</body>
+</html>

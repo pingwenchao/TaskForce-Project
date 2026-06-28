@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{page.title.register}">TaskForce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+    <style>
+        .password-validation {
+            list-style-type: none;
+            padding-left: 0;
+            font-size: 0.85em;
+            margin-top: 8px;
+            display: none; /* Initially hidden */
+        }
+        .password-validation li {
+            transition: color 0.3s;
+        }
+        .password-validation li::before {
+            content: '•';
+            margin-right: 8px;
+        }
+        .password-validation li.valid {
+            color: #34c759; /* Apple Green */
+        }
+        .password-validation li.invalid {
+            color: #6c757d; /* Bootstrap secondary gray */
+        }
+    </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid justify-content-end">
+        <div th:replace="~{fragments/language-switcher :: languageSwitcher}"></div>
+    </div>
+</nav>
+<div class="container mt-5">
+    <div class="card mx-auto" style="width: 400px;">
+        <div class="card-body p-4 p-sm-5">
+            <div class="auth-logo-container">
+                <img th:src="@{/images/logo.png}" alt="Logo" class="auth-logo">
+            </div>
+            <h2 class="text-center mb-4" th:text="#{page.header.register}">Register</h2>
+
+            <!-- Generic error message from registration attempt -->
+            <div th:if="${param.error}" class="alert alert-danger" th:text="${session.error ?: #{msg.register.fail}}">
+                Registration failed
+            </div>
+
+            <form th:action="@{/register}" th:object="${userDto}" method="post" novalidate>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <div class="mb-3">
+                    <label for="username" class="form-label" th:text="#{label.username}">Username</label>
+                    <input id="username" type="text" th:field="*{username}" class="form-control" th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''" required>
+                    <div th:if="${#fields.hasErrors('username')}" class="invalid-feedback" th:errors="*{username}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label" th:text="#{label.password}">Password</label>
+                    <input id="password" type="password" th:field="*{password}" class="form-control" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''" required>
+                    <div id="password-strength-meter" class="password-validation">
+                        <ul class="list-unstyled">
+                            <li id="length" class="invalid" th:text="#{validation.password.length}">At least 8 characters</li>
+                            <li id="uppercase" class="invalid" th:text="#{validation.password.uppercase}">At least one uppercase letter</li>
+                            <li id="lowercase" class="invalid" th:text="#{validation.password.lowercase}">At least one lowercase letter</li>
+                            <li id="number" class="invalid" th:text="#{validation.password.number}">At least one number</li>
+                        </ul>
+                    </div>
+                    <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback" th:errors="*{password}"></div>
+                </div>
+                <div class="mb-4">
+                    <label for="confirmPassword" class="form-label" th:text="#{label.confirm_password}">Confirm Password</label>
+                    <input id="confirmPassword" type="password" th:field="*{confirmPassword}" class="form-control" th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''" required>
+                    <div th:if="${#fields.hasErrors('confirmPassword')}" class="invalid-feedback" th:errors="*{confirmPassword}"></div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" th:text="#{btn.register}">Register</button>
+            </form>
+            <div class="mt-3 text-center">
+                <a th:href="@{/login}" th:text="#{link.login_account}">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const passwordInput = document.getElementById('password');
+    const passwordMeter = document.getElementById('password-strength-meter');
+    const lengthRequirement = document.getElementById('length');
+    const uppercaseRequirement = document.getElementById('uppercase');
+    const lowercaseRequirement = document.getElementById('lowercase');
+    const numberRequirement = document.getElementById('number');
+
+    passwordInput.addEventListener('focus', () => {
+        passwordMeter.style.display = 'block';
+    });
+
+    passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        const checks = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /\d/.test(password)
+        };
+
+        updateRequirement(lengthRequirement, checks.length);
+        updateRequirement(uppercaseRequirement, checks.uppercase);
+        updateRequirement(lowercaseRequirement, checks.lowercase);
+        updateRequirement(numberRequirement, checks.number);
+    });
+
+    function updateRequirement(element, isValid) {
+        if (isValid) {
+            element.classList.remove('invalid');
+            element.classList.add('valid');
+        } else {
+            element.classList.remove('valid');
+            element.classList.add('invalid');
+        }
+    }
+</script>
+</body>
+</html>
