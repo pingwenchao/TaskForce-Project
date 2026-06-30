@@ -55,7 +55,7 @@
                         <span th:text="${task.assignee?.username} ?: #{label.unassigned}" class="text-muted">Assign</span>
                     </td>
                     <td sec:authorize="hasRole('ADMIN')">
-                        <!-- <a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-sm btn-outline-primary" th:text="#{btn.action_edit}">Edit</a> -->
+                        <a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-sm btn-outline-primary" th:text="#{btn.action_edit}">Edit</a>
                         <form th:action="@{/tasks/delete}" method="post" class="d-inline"
                               onsubmit="return confirm(this.getAttribute('data-confirm-message'));"
                               th:attr="data-confirm-message=#{msg.delete_confirm}">

@@ -24,7 +24,7 @@ public class TaskLog {
 
     /** User who performed the change */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "changed_by", nullable = false)
+    @JoinColumn(name = "changed_by_id", nullable = false)
     private User changedBy;
 
     /** Status before the update (null if this is the initial log entry) */

@@ -184,12 +184,24 @@ public class TaskService {
         Task existingTask = taskRepository.findById(updatedTask.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid task ID: " + updatedTask.getId()));
 
-        // Update fields
+        // Update basic fields
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
         existingTask.setPriority(updatedTask.getPriority());
-        existingTask.setProject(updatedTask.getProject());
-        existingTask.setAssignee(updatedTask.getAssignee());
+        
+        // Update project - fetch from repository to ensure we have a managed entity
+        if (updatedTask.getProject() != null && updatedTask.getProject().getId() != null) {
+            Project project = projectService.getProjectById(updatedTask.getProject().getId());
+            existingTask.setProject(project);
+        }
+        
+        // Update assignee - fetch from repository or set to null
+        if (updatedTask.getAssignee() != null && updatedTask.getAssignee().getId() != null) {
+            User assignee = userService.findUserById(updatedTask.getAssignee().getId());
+            existingTask.setAssignee(assignee);
+        } else {
+            existingTask.setAssignee(null);
+        }
 
         taskRepository.save(existingTask);
         logger.info("Task details updated for ID: {}", existingTask.getId());

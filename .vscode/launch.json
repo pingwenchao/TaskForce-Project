@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-TaskForceApplication<taskforce>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.upm.taskforce.TaskForceApplication",
+            "projectName": "taskforce",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
