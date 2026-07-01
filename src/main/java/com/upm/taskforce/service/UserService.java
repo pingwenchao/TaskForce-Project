@@ -40,6 +40,8 @@ public class UserService {
      */
     @Transactional
     public void registerUser(String username, String password) {
+        logger.info("Attempting to register user: {}", username);
+        
         /* Validate username and password are provided */
         if (username == null || username.trim().isEmpty()) {
             logger.warn("Registration attempt with empty username");
@@ -62,10 +64,12 @@ public class UserService {
 
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        String encodedPassword = passwordEncoder.encode(password);
+        logger.info("Encoded password for '{}' is: {}", username, encodedPassword);
+        user.setPassword(encodedPassword);
         user.setRole(Role.ROLE_EMPLOYEE);
-        userRepository.save(user);
-        logger.info("New EMPLOYEE user registered: {}", username);
+        User savedUser = userRepository.save(user);
+        logger.info("New EMPLOYEE user registered successfully: {}, ID: {}", username, savedUser.getId());
     }
 
     /**
@@ -83,7 +87,6 @@ public class UserService {
         boolean hasUppercase = password.matches(".*[A-Z].*");
         boolean hasLowercase = password.matches(".*[a-z].*");
         boolean hasDigit = password.matches(".*\\d.*");
-        boolean hasSpecialChar = password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>?/].*");
 
         if (!hasUppercase || !hasLowercase || !hasDigit) {
             throw new IllegalArgumentException(

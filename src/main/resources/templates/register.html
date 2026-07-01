@@ -10,7 +10,7 @@
             padding-left: 0;
             font-size: 0.85em;
             margin-top: 8px;
-            display: none; /* Initially hidden */
+            display: none;
         }
         .password-validation li {
             transition: color 0.3s;
@@ -20,10 +20,10 @@
             margin-right: 8px;
         }
         .password-validation li.valid {
-            color: #34c759; /* Apple Green */
+            color: #34c759;
         }
         .password-validation li.invalid {
-            color: #6c757d; /* Bootstrap secondary gray */
+            color: #6c757d;
         }
     </style>
 </head>
@@ -41,7 +41,6 @@
             </div>
             <h2 class="text-center mb-4" th:text="#{page.header.register}">Register</h2>
 
-            <!-- Generic error message from registration attempt -->
             <div th:if="${param.error}" class="alert alert-danger" th:text="${session.error ?: #{msg.register.fail}}">
                 Registration failed
             </div>
@@ -69,6 +68,11 @@
                 <div class="mb-4">
                     <label for="confirmPassword" class="form-label" th:text="#{label.confirm_password}">Confirm Password</label>
                     <input id="confirmPassword" type="password" th:field="*{confirmPassword}" class="form-control" th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''" required>
+                    <div id="confirm-password-strength-meter" class="password-validation">
+                        <ul class="list-unstyled">
+                            <li id="confirm-match" class="invalid">Passwords match</li>
+                        </ul>
+                    </div>
                     <div th:if="${#fields.hasErrors('confirmPassword')}" class="invalid-feedback" th:errors="*{confirmPassword}"></div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100" th:text="#{btn.register}">Register</button>
@@ -82,10 +86,13 @@
 <script>
     const passwordInput = document.getElementById('password');
     const passwordMeter = document.getElementById('password-strength-meter');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const confirmPasswordMeter = document.getElementById('confirm-password-strength-meter');
     const lengthRequirement = document.getElementById('length');
     const uppercaseRequirement = document.getElementById('uppercase');
     const lowercaseRequirement = document.getElementById('lowercase');
     const numberRequirement = document.getElementById('number');
+    const confirmMatchRequirement = document.getElementById('confirm-match');
 
     passwordInput.addEventListener('focus', () => {
         passwordMeter.style.display = 'block';
@@ -104,7 +111,22 @@
         updateRequirement(uppercaseRequirement, checks.uppercase);
         updateRequirement(lowercaseRequirement, checks.lowercase);
         updateRequirement(numberRequirement, checks.number);
+        
+        validateConfirmPassword();
     });
+
+    confirmPasswordInput.addEventListener('focus', () => {
+        confirmPasswordMeter.style.display = 'block';
+    });
+
+    confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
+    function validateConfirmPassword() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const match = password === confirmPassword && confirmPassword.length > 0;
+        updateRequirement(confirmMatchRequirement, match);
+    }
 
     function updateRequirement(element, isValid) {
         if (isValid) {

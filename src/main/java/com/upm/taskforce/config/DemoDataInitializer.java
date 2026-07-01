@@ -44,9 +44,9 @@ public class DemoDataInitializer implements CommandLineRunner {
         logger.info("Initializing demo data...");
 
         // Create users
-        User admin = createUser("admin", "password", Role.ROLE_ADMIN);
-        User user = createUser("user", "password", Role.ROLE_EMPLOYEE);
-        User test = createUser("test", "password", Role.ROLE_EMPLOYEE);
+        User admin = createUser("admin", "Password123", Role.ROLE_ADMIN);
+        User user = createUser("user", "Password123", Role.ROLE_EMPLOYEE);
+        User test = createUser("test", "Password123", Role.ROLE_EMPLOYEE);
 
         // Create projects
         Project projectAlpha = createProject("Project Alpha", "First project", admin);
@@ -65,14 +65,17 @@ public class DemoDataInitializer implements CommandLineRunner {
 
         logger.info("Demo data initialization complete!");
         logger.info("You can log in with:");
-        logger.info("  Username: admin / Password: password (Admin)");
-        logger.info("  Username: user / Password: password (Employee)");
+        logger.info("  Username: admin / Password: Password123 (Admin)");
+        logger.info("  Username: user / Password: Password123 (Employee)");
+        logger.info("  Username: test / Password: Password123 (Employee)");
     }
 
     private User createUser(String username, String password, Role role) {
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        String encodedPassword = passwordEncoder.encode(password);
+        logger.info("Creating user '{}' with encoded password: {}", username, encodedPassword);
+        user.setPassword(encodedPassword);
         user.setRole(role);
         return userRepository.save(user);
     }

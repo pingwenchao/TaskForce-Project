@@ -10,9 +10,11 @@
             align-items: center;
             gap: 8px;
             min-width: 380px;
+            width: 380px;
         }
         .status-badge {
             width: 100px;
+            min-width: 100px;
             text-align: center;
             display: inline-block;
         }
@@ -21,24 +23,34 @@
             align-items: center;
             gap: 4px;
             min-width: 260px;
+            width: 260px;
         }
         .status-select {
             width: 140px;
+            min-width: 140px;
         }
         .priority-badge {
             width: 70px;
+            min-width: 70px;
             text-align: center;
             display: inline-block;
         }
         .btn-disabled {
-            pointer-events: auto !important;
-            cursor: not-allowed !important;
-            opacity: 0.65;
+            pointer-events: auto;
+            cursor: not-allowed;
         }
         .btn-disabled:hover {
             opacity: 0.8;
         }
+        table th:nth-child(1) { width: 20%; }
+        table th:nth-child(2) { width: 380px; min-width: 380px; }
+        table th:nth-child(3) { width: 100px; min-width: 100px; }
+        table th:nth-child(4) { width: 15%; }
+        table th:nth-child(5) { width: 180px; min-width: 180px; }
     </style>
+    <script th:inline="javascript">
+        var permissionDeniedMsg = /*[[#{msg.permission_denied}]]*/ 'Permission denied';
+    </script>
 </head>
 <body class="bg-light">
 <div th:replace="~{fragments/navbar :: navbar}"></div>
@@ -50,7 +62,7 @@
         <div>
             <a sec:authorize="hasRole('ADMIN')" href="/projects" class="btn btn-outline-primary me-2" th:text="#{nav.projects}">Projects</a>
             <a sec:authorize="hasRole('ADMIN')" href="/tasks/new" class="btn btn-primary" th:text="#{btn.add}">+ New Task</a>
-            <a sec:authorize="!hasRole('ADMIN')" href="#" class="btn btn-outline-secondary btn-disabled me-2" th:text="#{nav.projects}" th:onclick="'alert(\'' + #{msg.permission_denied} + '\'); return false;'" >Projects</a>
+            <a sec:authorize="!hasRole('ADMIN')" href="#" class="btn btn-outline-secondary btn-disabled me-2" th:text="#{nav.projects}" onclick="alert(permissionDeniedMsg); return false;">Projects</a>
         </div>
     </div>
 
@@ -118,12 +130,8 @@
                         </div>
                         <!-- EMPLOYEE sees disabled grey buttons -->
                         <div sec:authorize="!hasRole('ADMIN')">
-                            <a href="#" class="btn btn-sm btn-outline-secondary btn-disabled me-1" th:text="#{btn.action_edit}" 
-                               onclick="alert(this.getAttribute('data-permission-msg')); return false;"
-                               th:attr="data-permission-msg=#{msg.permission_denied}">Edit</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary btn-disabled" th:text="#{btn.action_delete}"
-                                    onclick="alert(this.getAttribute('data-permission-msg')); return false;"
-                                    th:attr="data-permission-msg=#{msg.permission_denied}">Delete</button>
+                            <a href="#" class="btn btn-sm btn-outline-secondary btn-disabled me-1" th:text="#{btn.action_edit}" onclick="alert(permissionDeniedMsg); return false;">Edit</a>
+                            <button class="btn btn-sm btn-outline-secondary btn-disabled" th:text="#{btn.action_delete}" onclick="alert(permissionDeniedMsg); return false;">Delete</button>
                         </div>
                     </td>
                 </tr>

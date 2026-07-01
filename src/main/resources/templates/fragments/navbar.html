@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <style>
-        .btn-disabled {
-            pointer-events: auto !important;
-            cursor: not-allowed !important;
-            opacity: 0.65;
-        }
-        .btn-disabled:hover {
-            opacity: 0.8;
-        }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom" th:fragment="navbar">
         <div class="container-fluid">
@@ -23,7 +10,7 @@
                 <!-- Project management link (visible to ADMIN) -->
                 <a sec:authorize="hasRole('ADMIN')" href="/projects" class="btn btn-sm btn-outline-secondary me-3" th:text="#{nav.projects}">Projects</a>
                 <!-- Project management link (disabled for EMPLOYEE) -->
-                <a sec:authorize="!hasRole('ADMIN')" href="#" class="btn btn-sm btn-outline-secondary btn-disabled me-3" th:text="#{nav.projects}" th:onclick="'alert(\'' + #{msg.permission_denied} + '\'); return false;'" >Projects</a>
+                <a sec:authorize="!hasRole('ADMIN')" href="#" class="btn btn-sm btn-outline-secondary btn-disabled me-3" th:text="#{nav.projects}" th:onclick="'alert(\'' + #{msg.permission_denied} + '\'); return false;'">Projects</a>
                 
                 <!-- Logout form -->
                 <form th:action="@{/logout}" method="post" class="m-0 me-3">

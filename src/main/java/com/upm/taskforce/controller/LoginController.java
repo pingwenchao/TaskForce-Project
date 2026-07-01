@@ -52,8 +52,16 @@ public class LoginController {
     public String register(@Valid @ModelAttribute("userDto") UserRegistrationDto userDto,
                            BindingResult bindingResult,
                            RedirectAttributes redirectAttributes) {
+        logger.info("=== REGISTRATION ATTEMPT ===");
+        logger.info("Username: {}", userDto.getUsername());
+        logger.info("Password provided: {}", userDto.getPassword() != null ? "YES (length=" + userDto.getPassword().length() + ")" : "NO");
+        logger.info("Confirm password provided: {}", userDto.getConfirmPassword() != null ? "YES" : "NO");
+        
         if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
+            logger.warn("Passwords do NOT match!");
             bindingResult.rejectValue("confirmPassword", "error.userDto", "Passwords do not match");
+        } else {
+            logger.info("Passwords match!");
         }
 
         if (bindingResult.hasErrors()) {
@@ -64,10 +72,11 @@ public class LoginController {
 
         try {
             // IMPORTANT: Use the password from the DTO, not a potentially different field
+            logger.info("Calling userService.registerUser...");
             userService.registerUser(userDto.getUsername(), userDto.getPassword());
             logger.info("User successfully registered: {}", userDto.getUsername());
             redirectAttributes.addFlashAttribute("successMessage", "registration.success");
-            return "redirect:/login";
+            return "redirect:/login?registered";
         } catch (UsernameAlreadyExistsException e) {
             logger.warn("Registration failed for user '{}': {}", userDto.getUsername(), e.getMessage());
             bindingResult.rejectValue("username", "error.userDto", "Username already exists");
