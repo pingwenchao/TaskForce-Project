@@ -25,7 +25,7 @@
         <tr th:each="project : ${projectPage.content}">
             <td th:text="${project.projectName}">Project</td>
             <td th:text="${project.manager.username}">Manager</td>
-            <td th:text="${project.createdAt}">Date</td>
+            <td th:text="${#temporals.format(project.createdAt, 'yyyy-MM-dd HH:mm:ss')}">Date</td>
             <td>
                 <form th:action="@{/projects/delete}" method="post" class="d-inline"
                       onsubmit="return confirm(this.getAttribute('data-confirm-message'));"

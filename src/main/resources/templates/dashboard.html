@@ -36,11 +36,14 @@
             display: inline-block;
         }
         .btn-disabled {
-            pointer-events: auto;
-            cursor: not-allowed;
+            pointer-events: auto !important;
+            cursor: not-allowed !important;
         }
         .btn-disabled:hover {
             opacity: 0.8;
+        }
+        .btn.btn-disabled {
+            cursor: not-allowed !important;
         }
         table th:nth-child(1) { width: 20%; }
         table th:nth-child(2) { width: 380px; min-width: 380px; }

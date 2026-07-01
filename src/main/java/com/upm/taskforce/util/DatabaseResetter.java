@@ -10,14 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Scanner;
 
 /**
- * 数据库重置工具
+ * Database Reset Utility
  * 
- * 使用方法：
- * 方法1：运行时添加参数 --reset-database=true
- * 方法2：直接在启动后输入 RESET 命令
+ * Provides functionality to completely reset the database by dropping all tables.
+ * Use with caution - this will delete all data!
  * 
- * 警告：这会删除所有表和数据！
- * 重置后需要重启应用让 JPA 重新创建表结构
+ * Usage:
+ * Method 1: Add parameter --reset-database=true when starting the application
+ * Method 2: Type RESET (case-sensitive) and press Enter after application starts
+ * 
+ * After reset, you must restart the application for JPA to recreate the table structure.
  */
 @Component
 public class DatabaseResetter implements CommandLineRunner {
@@ -26,13 +28,24 @@ public class DatabaseResetter implements CommandLineRunner {
 
     private final EntityManager entityManager;
 
+    /**
+     * Constructs the DatabaseResetter with the required EntityManager.
+     *
+     * @param entityManager JPA EntityManager for database operations
+     */
     public DatabaseResetter(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
+    /**
+     * Checks startup arguments and initializes the reset listener thread.
+     * If reset parameter is detected, triggers the database reset process.
+     *
+     * @param args command line arguments
+     */
     @Override
     public void run(String... args) {
-        // 检查是否有重置参数
+        // Check if reset parameter is present
         boolean shouldReset = false;
         for (String arg : args) {
             if (arg.equalsIgnoreCase("--reset-database=true") || 
@@ -47,15 +60,20 @@ public class DatabaseResetter implements CommandLineRunner {
             logger.info("To reset database, add parameter: --reset-database=true");
             logger.info("Or after startup, type RESET (case-sensitive) and press Enter");
             
-            // 启动一个后台线程监听输入
+            // Start background thread to listen for reset command
             startResetListener();
             return;
         }
 
-        // 参数方式触发重置
+        // Trigger reset via parameter
         resetDatabaseWithConfirmation();
     }
 
+    /**
+     * Starts a daemon thread that listens for console input.
+     * When "RESET" is entered, it triggers the database reset process.
+     * Also accepts "exit" or "quit" to stop the listener.
+     */
     private void startResetListener() {
         Thread resetThread = new Thread(() -> {
             try {
@@ -79,14 +97,19 @@ public class DatabaseResetter implements CommandLineRunner {
         resetThread.start();
     }
 
+    /**
+     * Handles the database reset process with user confirmation.
+     * In interactive environments, asks for YES confirmation.
+     * In non-interactive environments, waits 5 seconds before proceeding.
+     */
     private void resetDatabaseWithConfirmation() {
-        // 警告用户
+        // Warn the user about the irreversible operation
         logger.warn("========================================");
         logger.warn("!!! DATABASE RESET REQUESTED !!!");
         logger.warn("This will DELETE ALL TABLES AND DATA from the database!");
         logger.warn("========================================");
 
-        // 如果是交互式环境，请求确认
+        // Request confirmation in interactive environments
         if (System.console() != null) {
             System.out.print("Are you sure you want to reset the database? (YES to confirm): ");
             Scanner scanner = new Scanner(System.in);
@@ -108,45 +131,52 @@ public class DatabaseResetter implements CommandLineRunner {
             }
         }
 
-        // 执行重置
+        // Execute the actual reset
         resetDatabase();
     }
 
+    /**
+     * Performs the actual database reset by dropping all tables in the correct order.
+     * Order is important to avoid foreign key constraint violations.
+     * After dropping tables, JPA will recreate them on application restart.
+     *
+     * @throws RuntimeException if database operations fail
+     */
     @Transactional
     public void resetDatabase() {
         logger.info("Starting database reset...");
 
         try {
-            // 重要：删除顺序很重要，必须先删除有外键约束的表
+            // IMPORTANT: Drop order matters - tables with foreign keys must be dropped first
             String[] tables = {
-                "TASK_LOGS_V6",   // 任务日志（关联任务和用户）
-                "TASKS_V6",       // 任务（关联项目和用户）
-                "PROJECTS_V6",    // 项目（关联用户）
-                "USERS_V6"        // 用户（主表）
+                "TASK_LOGS_V6",   // Task logs (references tasks and users)
+                "TASKS_V6",       // Tasks (references projects and users)
+                "PROJECTS_V6",    // Projects (references users)
+                "USERS_V6"        // Users (parent table)
             };
 
-            // 禁用外键约束检查（Oracle 方式）
+            // Disable foreign key constraint checking (Oracle specific approach)
             try {
                 entityManager.createNativeQuery("SET CONSTRAINTS ALL DEFERRED").executeUpdate();
             } catch (Exception e) {
                 logger.debug("Could not disable constraints (may not be necessary)");
             }
 
-            // 逐个删除表
+            // Drop each table individually
             for (String tableName : tables) {
                 try {
-                    // 先尝试禁用表的约束
+                    // First attempt to disable constraints for the table
                     try {
                         entityManager.createNativeQuery("ALTER TABLE " + tableName + " DISABLE CONSTRAINT ALL").executeUpdate();
                     } catch (Exception e) {
                         logger.debug("Could not disable constraints for {}", tableName);
                     }
 
-                    // 删除表（使用 CASCADE CONSTRAINTS 来删除相关约束）
+                    // Drop the table with CASCADE to remove related constraints
                     entityManager.createNativeQuery("DROP TABLE " + tableName + " CASCADE CONSTRAINTS").executeUpdate();
                     logger.info("Dropped table: {}", tableName);
                 } catch (Exception e) {
-                    // 表不存在是正常的，忽略异常
+                    // Table not existing is expected for a clean database, skip
                     logger.debug("Table {} does not exist, skipping drop", tableName);
                 }
             }

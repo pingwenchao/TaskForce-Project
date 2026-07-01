@@ -46,18 +46,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         logger.info("User found in database: {}, Role: {}, Password hash: {}", 
                    username, user.getRole(), user.getPassword());
         
-        // 提取角色名称，去掉 ROLE_ 前缀
+        // Extract role name without ROLE_ prefix
         String roleName = user.getRole().name().replace("ROLE_", "");
         
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(username)
                 .password(user.getPassword())
-                .roles(roleName)  // 使用 roles() 而不是 authorities()
+                .roles(roleName)  // Use roles() instead of authorities()
                 .build();
 
-        // CRITICAL_DEBUG: Log the authorities being assigned
+        // Log the authorities being assigned
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        logger.info("CRITICAL_DEBUG: Assigning authorities to user '{}': {}", username, authorities);
+        logger.info("Assigning authorities to user '{}': {}", username, authorities);
         logger.info("UserDetails created successfully for: {}", username);
 
         return userDetails;

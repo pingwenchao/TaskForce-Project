@@ -206,9 +206,33 @@ The system automatically initializes demo data when the database is empty:
 
 | Username | Password | Role | Description |
 |----------|----------|------|-------------|
-| `admin` | `password` | ADMIN | Full system access |
-| `user` | `password` | EMPLOYEE | Regular employee account |
-| `test` | `password` | EMPLOYEE | Secondary employee account |
+| `admin` | `Password123` | ADMIN | Full system access |
+| `user` | `Password123` | EMPLOYEE | Regular employee account |
+| `test` | `Password123` | EMPLOYEE | Secondary employee account |
+
+## Database Reset Tool
+
+A built-in database reset utility is provided for development purposes:
+
+### Usage Methods
+
+**Method 1: Startup Parameter**
+```bash
+# Add --reset-database=true when starting the application
+mvnw.cmd spring-boot:run -Dspring-boot.run.arguments="--reset-database=true"
+```
+
+**Method 2: Console Command**
+- Start the application normally
+- Type `RESET` in the console and press Enter
+
+### What it Does
+- Drops all tables in the correct order (respecting foreign key constraints)
+- After reset, restart the application for JPA to recreate the tables and sequences
+- Demo data will be automatically reinitialized on the next startup
+
+### Warning
+⚠️ This will DELETE ALL DATA in the database! Use with caution.
 
 ### Demo Data Includes
 - 2 Projects: Project Alpha, Project Beta
@@ -261,12 +285,15 @@ TaskForce/
 │   │   │   │   ├── TaskRepository.java
 │   │   │   │   └── UserRepository.java
 │   │   │   │
-│   │   │   └── service/                     # Business logic layer
+│   │   │   ├── service/                     # Business logic layer
 │   │   │       ├── ProjectService.java
 │   │   │       ├── TaskService.java
 │   │   │       ├── UserDetailsServiceImpl.java
 │   │   │       ├── UserService.java
 │   │   │       └── UsernameAlreadyExistsException.java
+│   │   │
+│   │   │   └── util/                        # Utility classes
+│   │   │       └── DatabaseResetter.java    # Database reset utility
 │   │   │
 │   │   └── resources/
 │   │       ├── GroupProject/                # i18n message bundles

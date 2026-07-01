@@ -15,7 +15,7 @@
             <p><strong th:text="#{col.priority}">Priority:</strong> <span th:text="${task.priority}">MEDIUM</span></p>
             <p><strong th:text="#{label.task_project}">Project:</strong> <span th:text="${task.project.projectName}">Proj</span></p>
             <p><strong th:text="#{col.assign}">Assignee:</strong> <span th:text="${task.assignee?.username} ?: #{label.unassigned}">User</span></p>
-            <p><strong th:text="#{col.date}">Created:</strong> <span th:text="${task.createdAt}">2025-01-01</span></p>
+            <p><strong th:text="#{col.date}">Created:</strong> <span th:text="${#temporals.format(task.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2025-01-01 12:34:56</span></p>
             <a sec:authorize="hasRole('ADMIN')" th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-sm btn-warning mt-2" th:text="#{btn.action_edit}">Edit Task</a>
         </div>
     </div>
@@ -57,7 +57,7 @@
                 <td th:text="${log.changedBy.username}">User</td>
                 <td th:text="${log.oldStatus} ?: #{label.not_applicable}">Old</td>
                 <td th:text="${log.newStatus}">New</td>
-                <td th:text="${log.changeTime}">Time</td>
+                <td th:text="${#temporals.format(log.changeTime, 'yyyy-MM-dd HH:mm:ss')}">Time</td>
             </tr>
             </tbody>
         </table>

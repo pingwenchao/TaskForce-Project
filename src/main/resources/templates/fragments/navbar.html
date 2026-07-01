@@ -1,4 +1,18 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <style>
+        .btn-disabled {
+            pointer-events: auto !important;
+            cursor: not-allowed !important;
+        }
+        .btn-disabled:hover {
+            opacity: 0.8;
+        }
+        .btn.btn-disabled {
+            cursor: not-allowed !important;
+        }
+    </style>
+</head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom" th:fragment="navbar">
         <div class="container-fluid">
@@ -6,20 +20,15 @@
                 <img th:src="@{/images/logo.png}" alt="Logo" style="height: 40px; margin-right: 10px;">
                 <span th:text="#{app.title}">TaskForce</span>
             </a>
-            <div class="d-flex align-items-center">
-                <!-- Project management link (visible to ADMIN) -->
-                <a sec:authorize="hasRole('ADMIN')" href="/projects" class="btn btn-sm btn-outline-secondary me-3" th:text="#{nav.projects}">Projects</a>
-                <!-- Project management link (disabled for EMPLOYEE) -->
-                <a sec:authorize="!hasRole('ADMIN')" href="#" class="btn btn-sm btn-outline-secondary btn-disabled me-3" th:text="#{nav.projects}" th:onclick="'alert(\'' + #{msg.permission_denied} + '\'); return false;'">Projects</a>
+            <div class="d-flex align-items-center ms-auto">
+                <!-- Language Switcher -->
+                <div th:replace="~{fragments/language-switcher :: languageSwitcher}"></div>
                 
                 <!-- Logout form -->
-                <form th:action="@{/logout}" method="post" class="m-0 me-3">
+                <form th:action="@{/logout}" method="post" class="m-0 ms-3">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <button type="submit" class="btn btn-sm btn-outline-danger" th:text="#{nav.logout}">Logout</button>
                 </form>
-                
-                <!-- Language Switcher -->
-                <div th:replace="~{fragments/language-switcher :: languageSwitcher}"></div>
             </div>
         </div>
     </nav>
