@@ -63,9 +63,13 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4><span th:text="#{header.welcome}">Welcome, </span> <span th:text="${currentUser}">User</span></h4>
         <div>
+            <!-- ADMIN sees enabled buttons -->
             <a sec:authorize="hasRole('ADMIN')" href="/projects" class="btn btn-outline-primary me-2" th:text="#{nav.projects}">Projects</a>
             <a sec:authorize="hasRole('ADMIN')" href="/tasks/new" class="btn btn-primary" th:text="#{btn.add}">+ New Task</a>
+            
+            <!-- EMPLOYEE sees disabled buttons -->
             <a sec:authorize="!hasRole('ADMIN')" href="#" class="btn btn-outline-secondary btn-disabled me-2" th:text="#{nav.projects}" onclick="alert(permissionDeniedMsg); return false;">Projects</a>
+            <a sec:authorize="!hasRole('ADMIN')" href="#" class="btn btn-secondary btn-disabled" th:text="#{btn.add}" onclick="alert(permissionDeniedMsg); return false;">+ New Task</a>
         </div>
     </div>
 
